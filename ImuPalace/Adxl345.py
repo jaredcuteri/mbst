@@ -31,7 +31,14 @@ class Adxl345(AbstractIMU.AbstractIMU):
     @doc_inherit 
     def getAccels(self):
         # TODO: Incorporate Adafruit_ADXL345 docstring
-        return self.imu.read() 
+        # TODO: Calibrate
+        raw_accels = self.imu.read()
+        # All g-range when FULL_RES = 1  3.9 mG/LSB
+        # Need to add checking for 10 bit mode 2, 4 , 8, 16G modes
+        _xoffset, _yoffset, _zoffset = 0, 0, 0
+        offsets = (_xoffset, _yoffset, _zoffset)
+        accelsG = [ raw_accel*0.00390625+offset for raw_accel, offset in zip(raw_accels, offsets) ]
+        return accelsG
 
     @doc_inherit
     def getRates(self):

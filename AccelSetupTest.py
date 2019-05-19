@@ -45,16 +45,18 @@ def animate(i):
     samp_time = datetime.now()
     delt_time = samp_time - start_time
     time_s = delt_time.seconds + (delt_time.microseconds)*1e-6
-    timeHist.pop()
+    timeHist.pop(0)
     timeHist.append(time_s)
 
     for name, sensor in sensors.items():
-        _ = accelHist[name].pop()
+        _ = accelHist[name].pop(0)
         accelHist[name].append(sensor.getAccels())
     
     ax1.clear()
-    ln.set_data(timeHist,[accels[2] for accels in accelHist['adxl']])
+    zAccel =[accels[2] for accels in accelHist['adxl']] 
+    ln.set_data(timeHist,zAccel)
     return ln,
+
 ani = animation.FuncAnimation(fig, animate,init_func=init, blit=True, interval=500)
 Writer = animation.writers['html']
 writer = Writer(fps=2, metadata=dict(artist='Me'), bitrate=1800)

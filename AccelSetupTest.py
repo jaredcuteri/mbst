@@ -58,7 +58,7 @@ def animate(i):
 ani = animation.FuncAnimation(fig, animate,init_func=init, blit=True, interval=500)
 Writer = animation.writers['html']
 writer = Writer(fps=2, metadata=dict(artist='Me'), bitrate=1800)
-ani.save('test.html',writer=writer)
+ani.save('test2.html',writer=writer)
 
 while True:
     time.sleep(0.5)

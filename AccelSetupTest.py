@@ -16,11 +16,9 @@ dataPrecision = 6
 # Necessary to ensure data is output in correct order
 sensors = OrderedDict()
 # Instantiate sensors
-time.sleep(0.2) # Sleep necessary to avoid I/O error (Why?)
 sensors['MMA8451'] = Mma8451.Mma8451()
-time.sleep(0.2)
 sensors['ADXL345'] = Adxl345.Adxl345()
-dataRate = 800 #Hz
+dataRate = 400 #Hz
 # Configure sensor settings
 for sensor in sensors.values():
     sensor.setRange(8)

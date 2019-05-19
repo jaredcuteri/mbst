@@ -18,10 +18,10 @@ accelHist = {}
 timeHist = [0] * numSamp
 time.sleep(0.2) # Sleep necessary to avoid I/O error (Why?)
 sensors['mma'] = Mma8451.Mma8451()
-accelHist['mma'] = [(0, 0, 0), ] * numSamp
+accelHist['mma'] = [[0, 0, 0], ] * numSamp
 time.sleep(0.2)
 sensors['adxl'] = Adxl345.Adxl345()
-accelHist['adxl'] = [(0, 0, 0), ] * numSamp
+accelHist['adxl'] = [[0, 0, 0], ] * numSamp
 
 # Configure sensor settings
 for sensor in sensors.values():
@@ -53,7 +53,7 @@ def animate(i):
         accelHist[name].append(sensor.getAccels())
     
     ax1.clear()
-    ln.set_data(timeHist,list([accels[2] for accels in accelHist['adxl']]))
+    ln.set_data(timeHist,[accels[2] for accels in accelHist['adxl']])
     return ln,
 ani = animation.FuncAnimation(fig, animate,init_func=init, blit=True, interval=500)
 Writer = animation.writers['html']

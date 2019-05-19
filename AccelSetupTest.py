@@ -12,7 +12,7 @@ import matplotlib.animation as animation
 from matplotlib import style
 
 mpss2g = 1/9.81
-
+dataPrecision = 6 
 # Necessary to ensure data is output in correct order
 sensors = OrderedDict()
 # Instantiate sensors
@@ -42,9 +42,10 @@ dataSamples = 0
 while True:
     currTime = datetime.now()
     relTime = currTime-startTime
-    dataOut = [relTime,]
+    dataOut = [relTime.total_seconds(),]
     for name, sensor in sensors.items():
         dataOut += sensor.getAccels()    
+    dataOut = [ round(datum,dataPrecision) for datum in dataOut ]
     dataLog.writeData(dataOut)
     dataSamples += 1
     print( "Data Samples Collected: "+str(dataSamples), end='\r')

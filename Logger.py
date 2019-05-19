@@ -11,7 +11,7 @@ class Logger():
         self.logFile = open(filename+Logger.startTimeAbrv+".csv","w")
         self.logWriter = csv.writer(self.logFile, delimiter=',')
         self.logFile.write(desc + "\n")
-        self.logFile.write("Recording Started at: " + Logger.startTimeStr)
+        self.logFile.write("Recording Started at: " + Logger.startTimeStr+"\n")
     
     def writeString(self,string):
         self.logFile.write(string)

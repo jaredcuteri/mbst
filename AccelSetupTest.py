@@ -33,12 +33,12 @@ startTime = datetime.now()
 dataLog = Logger.Logger(filename="AccelData")
 AccelConfigStr = ""
 DataHeaderStr = "t[s] "
-for idx, name in enumerate(sensors.keys):
-    AccelConfig += "Accel#"+idx+" "+name+" "
-    DataHeaderStr += "Ax"+idx+"[g] Ay"+idx+"[g] Az"+idx+"[g] "
+for idx, name in enumerate(sensors.keys()):
+    AccelConfigStr += "Accel#"+str(idx)+" "+name+" "
+    DataHeaderStr += "Ax"+str(idx)+"[g] Ay"+str(idx)+"[g] Az"+str(idx)+"[g] "
 dataLog.writeString(AccelConfigStr+"\n")
 dataLog.writeHeader(DataHeaderStr.split(" "))
-
+dataSamples = 0
 while True:
     currTime = datetime.now()
     relTime = currTime-startTime
@@ -46,6 +46,8 @@ while True:
     for name, sensor in sensors.items():
         dataOut += sensor.getAccels()    
     dataLog.writeData(dataOut)
-    
+    dataSamples += 1
+    print( "Data Samples Collected: "+str(dataSamples), end='\r')
     # Save Accels to file
-    time.sleep(1/dataRate)
+    # Getting about 40 Hz with sleep
+    #time.sleep(1/dataRate)

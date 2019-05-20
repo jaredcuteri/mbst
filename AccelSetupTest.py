@@ -26,9 +26,19 @@ GPIO.output(recordPin, dataRecording)
 
 # Necessary to ensure data is output in correct order
 sensors = OrderedDict()
-# Instantiate sensors
-sensors['MMA8451'] = Mma8451.Mma8451()
-sensors['ADXL345'] = Adxl345.Adxl345()
+# TODO: Add this to the Abstract Base class for initialization
+def instSensor(sensors,name,inst):
+    try:
+        sensors[name] = inst()
+    except OSError:
+        print(name + " wouldn't load, trying again.")
+        sensors = instSensor(sensors,name,inst)
+    return sensors
+
+
+sensors = instSensor(sensors,'MMA8451', Mma8451.Mma8451)
+sensors = instSensor(sensors,'ADXL345', Adxl345.Adxl345)
+print("Both sensors loaded successfully")
 dataRate = 200 #Hz
 # Configure sensor settings
 for sensor in sensors.values():
@@ -46,42 +56,44 @@ firstPassRec = True
 firstPassOff = True
 recordData = False
 # Add power switch
-while True:
-    if recordData:
-        if firstPassRec:
-            firstPassOff = True
-            dataRecording = True
-            GPIO.output(recordPin, dataRecording)
-            dataLog = Logger.Logger(filename="AccelData",filepath="../mbst_data/")
-            dataLog.writeString(AccelConfigStr+"\n")
-            dataLog.writeHeader(DataHeaderStr.split(" "))
-            print('',end='\n')
-            print('Writing Output to: ' + dataLog.filename)
-            # Save off data collection start time
-            startTime = datetime.now()
-            dataSamples = 0
-            firstPassRec = False
+try:
+    while True:
+        if recordData:
+            if firstPassRec:
+                firstPassOff = True
+                dataRecording = True
+                GPIO.output(recordPin, dataRecording)
+                dataLog = Logger.Logger(filename="AccelData",filepath="../mbst_data/")
+                dataLog.writeString(AccelConfigStr+"\n")
+                dataLog.writeHeader(DataHeaderStr.split(" "))
+                print('',end='\n')
+                print('Writing Output to: ' + dataLog.filename)
+                # Save off data collection start time
+                startTime = datetime.now()
+                dataSamples = 0
+                firstPassRec = False
+                
+            currTime = datetime.now()
+            relTime = currTime-startTime
+            dataOut = [relTime.total_seconds(),]
+            for name, sensor in sensors.items():
+                dataOut += sensor.getAccels()    
+            dataOut = [ round(datum,dataPrecision) for datum in dataOut ]
+            dataLog.writeData(dataOut)
+            dataSamples += 1
+            print( "Data Samples Collected: "+str(dataSamples), end='\r')
+        else:
+            # Check Switch
+            if firstPassOff:
+                firstPassRec = True
+                dataRecording = False
+                GPIO.output(recordPin, dataRecording)
+                firstPassOff = False
             
-        currTime = datetime.now()
-        relTime = currTime-startTime
-        dataOut = [relTime.total_seconds(),]
-        for name, sensor in sensors.items():
-            dataOut += sensor.getAccels()    
-        dataOut = [ round(datum,dataPrecision) for datum in dataOut ]
-        dataLog.writeData(dataOut)
-        dataSamples += 1
-        print( "Data Samples Collected: "+str(dataSamples), end='\r')
-    else:
-        # Check Switch
-        if firstPassOff:
-            firstPassRec = True
-            dataRecording = False
-            GPIO.output(recordPin, dataRecording)
-            firstPassOff = False
-        
-    if GPIO.input(recSwitchPin):
-        recordData = not recordData
-        time.sleep(1)
-
-codeRunning = False
-GPIO.output(runningPin, codeRunning)
+        if GPIO.input(recSwitchPin):
+            recordData = not recordData
+            time.sleep(1)
+except KeyboardInterrupt:
+    print("Keyboard Interrupt Received, exiting gracefully.")
+    codeRunning = False
+    GPIO.output(runningPin, codeRunning)

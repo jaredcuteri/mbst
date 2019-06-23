@@ -64,7 +64,7 @@ try:
                 firstPassOff = True
                 dataRecording = True
                 GPIO.output(recordPin, dataRecording)
-                dataLog = Logger.Logger(filename="AccelData",filepath="../mbst_data/")
+                dataLog = Logger.Logger(filename="AccelData",filepath="./mbst_data/")
                 dataLog.writeString(AccelConfigStr+"\n")
                 dataLog.writeHeader(DataHeaderStr.split(" "))
                 print('',end='\n')

@@ -12,16 +12,15 @@ mpss2g = 1/9.81
 dataPrecision = 6 
 
 # GPIO Pin Setup
-runningPin = 21
-recordPin = 20
-recSwitchPin = 16
+runningPin = 15
+recordPin = 18
+recSwitchPin = 14
 GPIO.setup(runningPin, GPIO.OUT) # Code Running LED
 GPIO.setup(recordPin, GPIO.OUT) # Data Recording LED
 GPIO.setup(recSwitchPin, GPIO.IN)
 
 codeRunning = True
 dataRecording = False
-GPIO.output(runningPin, codeRunning)
 GPIO.output(recordPin, dataRecording)
 
 # Necessary to ensure data is output in correct order
@@ -39,6 +38,8 @@ def instSensor(sensors,name,inst):
 sensors = instSensor(sensors,'MMA8451', Mma8451.Mma8451)
 sensors = instSensor(sensors,'ADXL345', Adxl345.Adxl345)
 print("Both sensors loaded successfully")
+GPIO.output(runningPin, codeRunning)
+
 dataRate = 200 #Hz
 # Configure sensor settings
 for sensor in sensors.values():

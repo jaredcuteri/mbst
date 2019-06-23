@@ -25,3 +25,6 @@ class Logger():
         
     def writeData(self, data):
         self.logWriter.writerow(data)
+
+    def close(self):
+        self.logFile.close()

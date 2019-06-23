@@ -36,7 +36,13 @@ def instSensor(sensors,name,inst):
 
 
 sensors = instSensor(sensors,'MMA8451', Mma8451.Mma8451)
+sensors['MMA8451'].setRange(8) # 8g range
+sensors['MMA8451'].setDataRate(400) # 400 Hz
+
 sensors = instSensor(sensors,'ADXL345', Adxl345.Adxl345)
+sensors['ADXL345'].setRange(16) # 16g range
+sensors['ADXL345'].setDataRate(400) # 400 Hz
+
 print("Both sensors loaded successfully")
 GPIO.output(runningPin, codeRunning)
 
@@ -83,23 +89,24 @@ try:
             dataOut = [ round(datum,dataPrecision) for datum in dataOut ]
             dataLog.writeData(dataOut)
             dataSamples += 1
-            print( "Data Samples Collected: "+str(dataSamples), end='\r')
         else:
             # Check Switch
             if firstPassOff:
-                # TODO: Close File
                 firstPassRec = True
                 dataRecording = False
                 GPIO.output(recordPin, dataRecording)
+                dataLog.close()
+                print('Closed File: ' + dataLog.filename + '\n')
                 firstPassOff = False
-            
+    
+        # Switch Debouncer
         if GPIO.input(recSwitchPin):
             dbounceCounter += 1
             time.sleep(0.01)
         else:
             dbounceCounter = 0
 
-        if dbounceCounter >= 10:
+        if dbounceCounter >= 15:
             recordData = not recordData
             dbounceCounter = 0
             time.sleep(0.5)

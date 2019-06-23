@@ -99,10 +99,10 @@ try:
         else:
             dbounceCounter = 0
 
-        if dbounceCounter => 10:
+        if dbounceCounter >= 10:
             recordData = not recordData
             dbounceCounter = 0
-            time.sleep(0.25)
+            time.sleep(0.5)
 
 except KeyboardInterrupt:
     print("Keyboard Interrupt Received, exiting gracefully.")

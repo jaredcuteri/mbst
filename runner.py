@@ -56,6 +56,7 @@ for idx, name in enumerate(sensors.keys()):
 firstPassRec = True
 firstPassOff = True
 recordData = False
+dbounceCounter = 0
 # Add power switch
 try:
     while True:
@@ -86,14 +87,23 @@ try:
         else:
             # Check Switch
             if firstPassOff:
+                # TODO: Close File
                 firstPassRec = True
                 dataRecording = False
                 GPIO.output(recordPin, dataRecording)
                 firstPassOff = False
             
         if GPIO.input(recSwitchPin):
+            dbounceCounter += 1
+            time.sleep(0.01)
+        else:
+            dbounceCounter = 0
+
+        if dbounceCounter => 10:
             recordData = not recordData
-            time.sleep(1)
+            dbounceCounter = 0
+            time.sleep(0.25)
+
 except KeyboardInterrupt:
     print("Keyboard Interrupt Received, exiting gracefully.")
     codeRunning = False
